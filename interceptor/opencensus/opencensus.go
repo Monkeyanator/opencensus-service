@@ -144,15 +144,7 @@ func (oci *OCInterceptor) batchSpanExporting(longLivedRPCCtx context.Context, pa
 	// spansAndNode list unfurling then send spans grouped per node
 
 	// If the starting RPC has a parent span, then add it as a parent link.
-	parentSpanFromRPC := trace.FromContext(longLivedRPCCtx)
-	if parentSpanFromRPC != nil {
-		psc := parentSpanFromRPC.SpanContext()
-		span.AddLink(trace.Link{
-			SpanID:  psc.SpanID,
-			TraceID: psc.TraceID,
-			Type:    trace.LinkTypeParent,
-		})
-	}
+	internal.SetParentLink(longLivedRPCCtx, span)
 
 	for _, spn := range spnL {
 		oci.spanSink.ReceiveSpans(ctx, spn.node, spn.spans...)

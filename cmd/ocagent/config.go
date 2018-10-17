@@ -23,10 +23,14 @@ import (
 	"github.com/census-instrumentation/opencensus-service/exporter/exporterparser"
 )
 
-const defaultOCInterceptorAddress = "localhost:55678"
+const (
+	defaultOCInterceptorAddress     = "localhost:55678"
+	defaultZipkinInterceptorAddress = "localhost:9412"
+)
 
 type config struct {
 	OpenCensusInterceptorConfig *interceptorConfig `yaml:"opencensus_interceptor"`
+	ZipkinInterceptorConfig     *interceptorConfig `yaml:"zipkin_interceptor"`
 }
 
 type interceptorConfig struct {
@@ -39,6 +43,13 @@ func (c *config) ocInterceptorAddress() string {
 		return defaultOCInterceptorAddress
 	}
 	return c.OpenCensusInterceptorConfig.Address
+}
+
+func (c *config) zipkinInterceptorAddress() string {
+	if c == nil || c.ZipkinInterceptorConfig == nil {
+		return defaultZipkinInterceptorAddress
+	}
+	return c.ZipkinInterceptorConfig.Address
 }
 
 func parseOCAgentConfig(yamlBlob []byte) (*config, error) {
